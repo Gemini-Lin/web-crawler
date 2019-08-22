@@ -1,0 +1,32 @@
+from urllib import request#导入请求模块
+from urllib import parse#导入分析模块
+import json
+
+if __name__=='__main__':
+    request_url="http://fanyi.youdao.com/translate?smartresult=dict&smartresult=rule"
+    #获取的url地址
+
+    From_Data={}#创建字典
+    while True:#自动循环翻译系统
+        From_Data['i']=input("请输入你需要翻译的内容：")#交互式翻译
+        From_Data['from']='AUTO'
+        From_Data['to']='AUTO'
+        From_Data['smartresult']='dict'
+        From_Data['client']='fanyideskweb'
+        From_Data['doctype']='json'
+        From_Data['version']='2.1'
+        From_Data['keyfrom']='fanyi.web'
+        From_Data['action']='FY_BY_REALTIME'
+
+        data=parse.urlencode(From_Data).encode('utf-8')
+        #使用urlenconde转换标准格式
+        response=request.urlopen(request_url,data)
+        #传递Request对象和转换的data
+        html=response.read().decode('utf-8')
+        #读取信息并解码
+        translate_result=json.loads(html)
+        #使用json下载
+        translate_results=translate_result["translateResult"][0][0]["tgt"]
+        #调用json字典获取翻译结果
+        print("翻译的结果是 %s"%translate_results)
+
