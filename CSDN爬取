@@ -1,0 +1,43 @@
+#-*-UTF-8-*-
+"""
+    Author:linjun
+    Function:爬取CSDN人工智能板块的最新推荐模块下的URL、COMMENT、TITLE
+    Date:2019/9/4
+    Version:1.0
+"""
+from urllib import request
+from bs4 import BeautifulSoup
+import re
+
+if __name__=="__main__":
+    url="https://ai.csdn.net/"
+    headers={
+        "user-agent":"Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36",
+        "accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3",
+    }
+    req=request.Request(url=url,headers=headers)
+    response=request.urlopen(req)
+    html=response.read().decode('utf-8')
+    texts=BeautifulSoup(html,'html.parser')
+    text=texts.find_all(href=re.compile('article'),target='_blank')
+    filename="CSDN爬取数据.txt"
+    f=open(filename,"w")
+    urllist=[]
+    for item in text:
+        urllist.append(item['href'])
+    urllist=list(set(urllist))
+    for item in urllist:
+
+        f.write("URL:")
+        f.write(item)
+        download_url="https://blog.csdn.net/dQCFKyQDXYm3F8rB0/article/details/100435800"
+        req1 = request.Request (url=download_url, headers=headers)
+        response1 = request.urlopen (req1)
+        html1 = response1.read ( ).decode ('utf-8')
+        titles = BeautifulSoup (html1, 'html.parser')
+        title = titles.find_all (class_=re.compile('title-article'))[0].get_text()
+        f.write ("TITLE:")
+        f.write (str (title))
+        comment=titles.find_all(class_='comment')
+        for item1 in comment:
+            f.write(item1.get_text().split("：")[-1])
